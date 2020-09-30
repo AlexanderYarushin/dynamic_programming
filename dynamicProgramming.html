@@ -1,0 +1,177 @@
+ <script>document.write('<script src="http://' + (location.host || 'localhost').split(':')[0] + ':35729/livereload.js?snipver=1"></' + 'script>')</script>
+ <script type="text/javascript" src = "https://code.jquery.com/jquery-3.5.1.min.js"></script>
+
+ <input type="button" value="Решить" onclick = "calc()">
+ <hr>
+
+
+ <script type="text/javascript">
+ 	var companyCount;
+ 	var money;
+
+ 	// var _data = [
+ 	// [4.1, 4.5, 5.1, 6.7, 7.0],
+ 	// [4.0, 5.0, 5.5, 6.0, 8.0],
+ 	// [3.1, 4.7, 5.3, 5.9, 6.5],
+ 	// ];
+
+ 	// var _data = [
+ 	// [4.4, 4.6, 4.8, 4.9, 5.2],
+ 	// [4.6, 4.8, 5.3, 5.8, 6.3],
+ 	// [4.0, 4.5, 5.1, 6.0, 6.6],
+ 	// ];
+
+ 	// var _data = [
+ 	// [5, 9, 12, 14, 15, 18, 20, 24, 27],
+ 	// [7, 9, 11, 13, 16, 19, 21, 22, 25],
+ 	// [6, 10,13, 15, 16, 18, 21, 22, 25]
+ 	// ];
+
+ 	var _data = [
+ 	[0.2,0.9,1.0,1.2,2.0],
+ 	[1.0,1.1,1.3,1.4,1.8],
+ 	[2.1,2.5,2.9,3.9,4.9]
+ 	];
+
+
+ 	window.onload = function(){
+ 		companyCount = _data.length;
+ 		money = _data[0].length;
+ 		filltable(_data);
+ 		calc();
+ 		
+ 	}
+
+ 	function filltable(data){
+ 		var result = "<table><tbody>";
+
+ 		result += "<tr>";
+ 		result += "<th></th>"
+ 		for(var i = 1; i <= money; ++i){
+ 			result += "<th>" + i + " млн. </th>"
+ 		}
+ 		result += "</tr>";
+
+
+
+ 		for(var i = 0; i < companyCount; ++i){
+ 			result += "<tr><td>"+(i+1)+"</td>";
+ 			for(var j = 0; j < money; ++j){
+ 				result += "<td>"+data[i][j]+"</td>"
+ 			}
+ 			result += "</tr>";
+ 		}
+
+
+ 		result += "</table></tbody>";
+
+ 		$("body").append(result);
+
+ 	}
+
+
+ 	function resultTable(data){
+ 		var result = "<br><table><tbody>";
+
+ 		result += "<tr>";
+ 		for(var i = companyCount; i > 0 ; --i){
+ 			result += "<th>" + (i) + "</th>"
+ 		}
+ 		result += "<th>Сумма</th>"
+ 		result += "</tr>";
+
+
+ 		for(var i = 0; i < data.length; ++i){
+ 			for(var j = 0; j < data.length; ++j){
+ 				if(data[i] != data[j]){
+ 					if(data[i][data[i].length-1] > data[j][data[j].length-1]){
+ 						var tmp = data[i];
+ 						data[i] = data[j]
+ 						data[j] = tmp;
+ 					}
+ 				}
+ 			}
+
+ 		} 		
+
+
+
+ 		var max = data[0][companyCount];
+
+ 		for(var i = 1; i < data.length; ++i){
+ 			if(max < data[i][companyCount]){
+ 				max = data[i][companyCount];
+ 			}
+ 		}
+
+ 		var min = data[data.length-1][data[data.length-1].length-1];
+
+ 		for(var i = 0; i < data.length; ++i){
+ 			if(data[i][data[i].length-1] == max) result += "<tr class = 'good'>"; else
+ 			if(data[i][data[i].length-1] < max && (data[i][data[i].length-1] > (max+min)/2)) result += "<tr class = 'normal'>"; 
+ 			else		result += "<tr class = 'bad'>";
+ 			for(var j = 0; j < data[i].length; ++j){
+ 				
+ 				if(j == data[i].length-1) result += "<td>"+data[i][j].toFixed(1)+"</td>"; else result += "<td>"+data[i][j]+"</td>"
+ 			}
+ 			result += "</tr>";
+ 		}
+ 		
+
+
+ 		result += "</table></tbody>";
+ 		$("body").append(result);
+
+ 	}
+
+ 	var glob_result = [];
+
+ 	function rec(_company, _money, str = "", profit = 0){
+ 		for(var i = _money; i > 0; --i){
+ 			
+ 			var _profit = _data[_company-1][i-1];
+ 			if(_company > 1) {
+ 				var _str = (i + "-");
+ 				
+ 				rec(_company-1,_money-i,str+_str,_profit+profit);
+
+ 			} 
+ 			if(_company == 1) {
+ 				var mas = (str+i).split("-");
+
+ 				var result = [];
+ 				var ind = mas.length;
+ 				for(var l = 0; l < mas.length; ++l) {
+ 					ind--;
+ 					result.push("<b>"+mas[l]+"</b>" + " ("+_data[ind][mas[l]-1]+")");
+
+ 				}
+
+ 				result.push(profit + _profit);
+
+ 				glob_result.push(result);
+
+ 			}
+
+ 		}
+ 		
+ 	}
+
+ 	
+
+ 	function calc(){
+ 		
+ 		rec(companyCount,money);
+ 		resultTable(glob_result);
+
+ 	}
+
+ </script>
+
+ <style type="text/css">
+ 	table{border-collapse:collapse;border:1px solid #00280e; width: 50%;}
+ 	td, th{ border:1px solid #000; text-align: center; }
+ 	.good{ background: rgba(0,255,0,.5);  }
+ 	.normal{ background: rgba(255,255,0,.5);  }
+ 	.bad{ background: rgba(255,0,0,.5);  }
+ </style>
