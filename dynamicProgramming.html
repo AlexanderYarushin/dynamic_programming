@@ -31,7 +31,7 @@
 
  	function fill(){
  		for(var i = 0; i < _data.length; ++i){
- 			for(var j = 0; j < _data[i].length; ++j){
+ 			for(var j = 1; j < _data[i].length; ++j){
  				_data[i][j] =  parseFloat(((j+1) * rand(1,2)).toFixed(1));
  			}
  		}
@@ -61,11 +61,17 @@
  	}
 
  	function load(){
+ 		// var load_data = [
+ 		// [0, 5, 9, 12, 14, 15, 18, 20, 24, 27],
+ 		// [0, 7, 9, 11, 13, 16, 19, 21, 22, 25],
+ 		// [0, 6, 10,13, 15, 16, 18, 21, 22, 25]
+ 		// ];
+
  		var load_data = [
- 		[5, 9, 12, 14, 15, 18, 20, 24, 27],
- 		[7, 9, 11, 13, 16, 19, 21, 22, 25],
- 		[6, 10,13, 15, 16, 18, 21, 22, 25]
- 		];
+ 		 [0, 4.1, 4.5, 5.1, 6.7, 7.0],
+ 		 [0, 4.0, 5.0, 5.5, 6.0, 8.0],
+ 		 [0, 3.1, 4.7, 5.3, 5.9, 6.5],
+ 		 ];
 
  		_data = load_data;
  		filltable(load_data);
@@ -84,7 +90,7 @@
 
  		result += "<tr>";
  		result += "<th></th>"
- 		for(var i = 1; i <= money; ++i){
+ 		for(var i = 0; i < money; ++i){
  			result += "<th>" + i + " млн. </th>"
  		}
  		result += "</tr>";
@@ -94,7 +100,8 @@
  		for(var i = 0; i < companyCount; ++i){
  			result += "<tr><td>"+(i+1)+"</td>";
  			for(var j = 0; j < money; ++j){
- 				result += "<td><input class = 'inp' value = "+data[i][j]+"></td>"
+ 				if(j == 0) result += "<td>"+data[i][j]+"</td>"; else
+ 				result += "<td><input type = 'number' step = '0.1' class = 'inp' id = '"+i+""+(j-1)+"' value = "+data[i][j]+"></td>";
  			}
  			result += "</tr>";
  		}
@@ -165,9 +172,9 @@
  	var glob_result = [];
 
  	function rec(_company, _money, str = "", profit = 0){
- 		for(var i = _money; i > 0; --i){
- 			
- 			var _profit = _data[_company-1][i-1];
+ 		for(var i = _money-1; i >= 0; --i){
+ 			console.log(i);
+ 			var _profit = _data[_company-1][i];
  			if(_company > 1) {
  				var _str = (i + "-");
  				
@@ -181,7 +188,7 @@
  				var ind = mas.length;
  				for(var l = 0; l < mas.length; ++l) {
  					ind--;
- 					result.push("<b>"+mas[l]+"</b>" + " ("+_data[ind][mas[l]-1]+")");
+ 					result.push("<b>"+mas[l]+"</b>" + " ("+_data[ind][mas[l]]+")");
 
  				}
 
@@ -197,8 +204,18 @@
  	}
 
  	
+ 	function reFill(){
+ 		for(var i = 0; i < _data.length; ++i){
+ 			for(var j = 1; j < _data[i].length; ++j){
+ 				if(parseFloat($("#"+i+""+j).val()) != _data[i][j]){
+ 					_data[i][j] = parseFloat($("#"+i+""+(j-1)).val());
+ 				}
+ 			}
+ 		}
+ 	}
 
  	function calc(){
+ 		reFill();
  		$('.resTable').remove();
  		glob_result = [];
  		rec(companyCount,money);
@@ -213,6 +230,7 @@
  	*{ font-family: "PT Sans";  }
  	table{border-collapse:collapse;border:1px solid #00280e; width: 70%; position: relative;}
  	td, th{ border:1px solid #000; text-align: center;}
+ 	th{ white-space: nowrap; padding-left: 5px; padding-right: 5px;}
  	.good{ background: rgba(0,255,0,.5);  }
  	.normal{ background: rgba(255,255,0,.5);  }
  	.bad{ background: rgba(255,0,0,.5);  }
